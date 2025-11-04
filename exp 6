@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ProductCard Component Using Props</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .card {
+      border: 1px solid #ccc; border-radius: 8px; padding: 15px;
+      margin: 10px; width: 200px; box-shadow: 2px 2px 6px #ddd;
+    }
+    .in-stock { color: green; }
+    .out-stock { color: red; }
+  </style>
+</head>
+<body>
+  <h2>🛒 ProductCard Component Using Props</h2>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    // ProductCard Component
+    function ProductCard({ name, price, inStock }) {
+      return (
+        <div className="card">
+          <h3>{name}</h3>
+          <p>Price: ${price}</p>
+          <p className={inStock ? "in-stock" : "out-stock"}>
+            {inStock ? "In Stock" : "Out of Stock"}
+          </p>
+        </div>
+      );
+    }
+
+    // Main App
+    function App() {
+      return (
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
+          <ProductCard name="Laptop" price={999} inStock={true} />
+          <ProductCard name="Smartphone" price={699} inStock={false} />
+          <ProductCard name="Headphones" price={199} inStock={true} />
+        </div>
+      );
+    }
+
+    // Render App
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
