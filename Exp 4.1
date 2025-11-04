@@ -1,0 +1,76 @@
+const express = require("express");
+const app = express();
+const PORT = 3000;
+
+let employees = []; // In-memory employee list
+
+app.use(express.json());
+
+// Serve HTML directly
+app.get("/", (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Employee Management</title>
+      <style>
+        body { font-family: Arial; margin: 30px; }
+        input, button { margin: 5px; padding: 5px; }
+        table { border-collapse: collapse; width: 50%; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 8px; }
+        th { background: #007bff; color: white; }
+      </style>
+    </head>
+    <body>
+      <h2>Employee Management System</h2>
+      <input id="id" placeholder="Employee ID">
+      <input id="name" placeholder="Employee Name">
+      <button onclick="addEmployee()">Add</button>
+      <table id="tbl">
+        <thead><tr><th>ID</th><th>Name</th><th>Action</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <script>
+        async function load() {
+          const res = await fetch('/api'); 
+          const data = await res.json();
+          const tbody = document.querySelector('tbody');
+          tbody.innerHTML = data.map(e =>
+            \`<tr><td>\${e.id}</td><td>\${e.name}</td>
+              <td><button onclick="remove('\${e.id}')">Delete</button></td></tr>\`
+          ).join('');
+        }
+        async function addEmployee() {
+          const id = document.getElementById('id').value.trim();
+          const name = document.getElementById('name').value.trim();
+          if(!id || !name) return alert('Enter ID & Name');
+          await fetch('/api', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id,name})});
+          load();
+        }
+        async function remove(id) {
+          await fetch('/api/'+id, {method:'DELETE'});
+          load();
+        }
+        load();
+      </script>
+    </body>
+    </html>
+  `);
+});
+
+// API routes
+app.get("/api", (req, res) => res.json(employees));
+
+app.post("/api", (req, res) => {
+  const { id, name } = req.body;
+  if (!id || !name) return res.status(400).json({ msg: "Missing data" });
+  employees.push({ id, name });
+  res.json({ msg: "Added" });
+});
+
+app.delete("/api/:id", (req, res) => {
+  employees = employees.filter(e => e.id !== req.params.id);
+  res.json({ msg: "Deleted" });
+});
+
+app.listen(PORT, () => console.log(`✅ Running at http://localhost:${PORT}`));
