@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Library Management UI</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      body { font-family: Arial; padding: 20px; }
+      input, button { margin: 5px; padding: 6px; }
+      .book { margin: 5px 0; }
+      .remove-btn { color: red; cursor: pointer; margin-left: 10px; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      function LibraryApp() {
+        const [books, setBooks] = React.useState([
+          { title: "1984", author: "George Orwell" },
+          { title: "To Kill a Mockingbird", author: "Harper Lee" },
+          { title: "The Great Gatsby", author: "F. Scott Fitzgerald" }
+        ]);
+        const [search, setSearch] = React.useState("");
+        const [newBook, setNewBook] = React.useState({ title: "", author: "" });
+
+        const filteredBooks = books.filter(
+          b =>
+            b.title.toLowerCase().includes(search.toLowerCase()) ||
+            b.author.toLowerCase().includes(search.toLowerCase())
+        );
+
+        const addBook = e => {
+          e.preventDefault();
+          if (!newBook.title || !newBook.author) return;
+          setBooks([...books, newBook]);
+          setNewBook({ title: "", author: "" });
+        };
+
+        const removeBook = index =>
+          setBooks(books.filter((_, i) => i !== index));
+
+        return (
+          <div>
+            <h2>📚 Library Management</h2>
+            <input
+              type="text"
+              placeholder="Search by title or author..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+            <ul>
+              {filteredBooks.map((b, i) => (
+                <li key={i} className="book">
+                  <b>{b.title}</b> by {b.author}
+                  <span className="remove-btn" onClick={() => removeBook(i)}>
+                    ✖
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <h3>Add New Book</h3>
+            <form onSubmit={addBook}>
+              <input
+                type="text"
+                placeholder="Title"
+                value={newBook.title}
+                onChange={e => setNewBook({ ...newBook, title: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Author"
+                value={newBook.author}
+                onChange={e => setNewBook({ ...newBook, author: e.target.value })}
+              />
+              <button type="submit">Add</button>
+            </form>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<LibraryApp />);
+    </script>
+  </body>
+</html>
