@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Product Filter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        select {
+            margin-right: 20px;
+            padding: 5px;
+        }
+        .product {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .product h3 {
+            margin: 0 0 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Dynamic Product Filter</h1>
+
+<label for="categoryFilter">Category:</label>
+<select id="categoryFilter">
+    <option value="all">All</option>
+</select>
+
+<label for="priceFilter">Price:</label>
+<select id="priceFilter">
+    <option value="all">All</option>
+    <option value="0-50">0 - 50</option>
+    <option value="51-100">51 - 100</option>
+    <option value="101-200">101 - 200</option>
+</select>
+
+<div id="productList"></div>
+
+<script>
+    // Sample product data
+    const products = [
+        { name: 'Laptop', category: 'Electronics', price: 1200 },
+        { name: 'Headphones', category: 'Electronics', price: 50 },
+        { name: 'Shirt', category: 'Clothing', price: 30 },
+        { name: 'Shoes', category: 'Clothing', price: 80 },
+        { name: 'Coffee Maker', category: 'Appliances', price: 60 },
+        { name: 'Blender', category: 'Appliances', price: 45 },
+        { name: 'Smartphone', category: 'Electronics', price: 900 }
+    ];
+
+    const categoryFilter = document.getElementById('categoryFilter');
+    const priceFilter = document.getElementById('priceFilter');
+    const productList = document.getElementById('productList');
+
+    // Populate category dropdown dynamically
+    const categories = [...new Set(products.map(p => p.category))];
+    categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        categoryFilter.appendChild(option);
+    });
+
+    // Function to display products
+    function displayProducts(filteredProducts) {
+        productList.innerHTML = '';
+        if (filteredProducts.length === 0) {
+            productList.innerHTML = '<p>No products found.</p>';
+            return;
+        }
+        filteredProducts.forEach(product => {
+            const div = document.createElement('div');
+            div.className = 'product';
+            div.innerHTML = `
+                <h3>${product.name}</h3>
+                <p>Category: ${product.category}</p>
+                <p>Price: $${product.price}</p>
+            `;
+            productList.appendChild(div);
+        });
+    }
+
+    // Filter function
+    function filterProducts() {
+        let selectedCategory = categoryFilter.value;
+        let selectedPrice = priceFilter.value;
+
+        let filtered = products.filter(product => {
+            let categoryMatch = selectedCategory === 'all' || product.category === selectedCategory;
+            
+            let priceMatch = true;
+            if (selectedPrice !== 'all') {
+                const [min, max] = selectedPrice.split('-').map(Number);
+                priceMatch = product.price >= min && product.price <= max;
+            }
+            return categoryMatch && priceMatch;
+        });
+
+        displayProducts(filtered);
+    }
+
+    // Event listeners
+    categoryFilter.addEventListener('change', filterProducts);
+    priceFilter.addEventListener('change', filterProducts);
+
+    // Initial display
+    displayProducts(products);
+</script>
+
+</body>
+</html>
