@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product CRUD + Filter</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        input, select, button { padding: 5px; margin: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+    </style>
+</head>
+<body>
+<h1>Product CRUD + Filter</h1>
+
+<h2>Add Product</h2>
+<form action="/add" method="POST">
+    <input type="text" name="name" placeholder="Name" required>
+    <input type="text" name="category" placeholder="Category" required>
+    <input type="number" name="price" placeholder="Price" required>
+    <button type="submit">Add</button>
+</form>
+
+<h2>Filter Products</h2>
+<form method="GET" action="/">
+    <label>Category:</label>
+    <select name="category">
+        <option value="all">All</option>
+        <% categories.forEach(cat => { %>
+            <option value="<%= cat %>" <%= selectedCategory === cat ? 'selected' : '' %>><%= cat %></option>
+        <% }) %>
+    </select>
+
+    <label>Price:</label>
+    <select name="price">
+        <option value="all" <%= selectedPrice==='all' ? 'selected' : '' %>>All</option>
+        <option value="0-50" <%= selectedPrice==='0-50' ? 'selected' : '' %>>0-50</option>
+        <option value="51-100" <%= selectedPrice==='51-100' ? 'selected' : '' %>>51-100</option>
+        <option value="101-200" <%= selectedPrice==='101-200' ? 'selected' : '' %>>101-200</option>
+    </select>
+    <button type="submit">Filter</button>
+</form>
+
+<h2>Product List</h2>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Price</th>
+        <th>Actions</th>
+    </tr>
+    <% products.forEach(product => { %>
+    <tr>
+        <form action="/update/<%= product._id %>" method="POST">
+            <td><input type="text" name="name" value="<%= product.name %>" required></td>
+            <td><input type="text" name="category" value="<%= product.category %>" required></td>
+            <td><input type="number" name="price" value="<%= product.price %>" required></td>
+            <td>
+                <button type="submit">Update</button>
+        </form>
+                <form action="/delete/<%= product._id %>" method="POST" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+    </tr>
+    <% }) %>
+</table>
+
+</body>
+</html>
